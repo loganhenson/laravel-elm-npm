@@ -1,0 +1,26 @@
+{
+  "name": "laravel-elm",
+  "version": "1.0.0",
+  "description": "A package to provide support for compiling Elm in Laravel",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tightenco/laravel-elm.git"
+  },
+  "keywords": [
+    "laravel",
+    "elm"
+  ],
+  "author": "Tighten Co. (logan@tighten.co)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tightenco/laravel-elm/issues"
+  },
+  "homepage": "https://github.com/tightenco/laravel-elm#readme",
+  "dependencies": {
+    "chokidar": "^1.6.1"
+  }
+}
