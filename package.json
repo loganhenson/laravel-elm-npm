@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tightenco/laravel-elm.git"
+    "url": "git+https://github.com/loganhenson/laravel-elm.git"
   },
   "keywords": [
     "laravel",
@@ -17,9 +17,9 @@
   "author": "Tighten Co. (logan@tighten.co)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tightenco/laravel-elm/issues"
+    "url": "https://github.com/loganhenson/laravel-elm/issues"
   },
-  "homepage": "https://github.com/tightenco/laravel-elm#readme",
+  "homepage": "https://github.com/loganhenson/laravel-elm#readme",
   "dependencies": {
     "chokidar": "^1.6.1"
   }
