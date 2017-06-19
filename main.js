@@ -31,7 +31,8 @@ const getPrograms = function (done) {
  |--------------------------------------------------------------------------
  */
 const make = getPrograms.bind(null, (programs) => {
-    const command = `elm make ${programs.join(' ')} --output ./public/js/elm.js --warn --yes --debug`;
+    const debug = process.env.NODE_ENV === 'production' ? '' : '--debug';
+    const command = `elm make ${programs.join(' ')} --output ./public/js/elm.js --warn --yes ${debug}`;
 
     return spawn(
         command,
