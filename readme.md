@@ -1,6 +1,6 @@
 # Laravel Elm Integration
 
-A package to provide support for compiling Elm in Laravel
+A package to provide support for compiling Elm via Laravel Mix
 
 Recommended: [laravel-elm](https://github.com/tightenco/laravel-elm)
 
@@ -9,21 +9,17 @@ Recommended: [laravel-elm](https://github.com/tightenco/laravel-elm)
 ```
 npm install --save-dev laravel-elm
 ```
-or
-```
-yarn add --dev laravel-elm
-```
 
 ## Config
 
 In your `webpack.mix.js`:
 
 ```
-let mix = require('laravel-mix').mix;
-let elm = require('laravel-elm');
+const mix = require('laravel-mix');
+const elm = require('laravel-elm');
 
-mix.js('resources/assets/js/app.js', 'public/js')
-    .sass('resources/assets/sass/app.scss', 'public/css')
+mix.js('resources/js/app.js', 'public/js')
+    .sass('resources/sass/app.scss', 'public/css')
     .then(elm);
 ```
 
