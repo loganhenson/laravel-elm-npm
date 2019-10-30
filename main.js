@@ -2,7 +2,7 @@ const spawn = require('child_process').spawn;
 const {readdir, readdirSync, lstatSync} = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
-const elmPath = path.resolve(process.cwd(), 'resources/assets/elm');
+const elmPath = path.resolve(process.cwd(), 'resources/elm');
 const publicPath = path.resolve(process.cwd(), 'public');
 const cwd = path.resolve(process.cwd(), elmPath);
 
