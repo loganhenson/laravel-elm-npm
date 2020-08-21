@@ -1,54 +1,50 @@
-const spawn = require('child_process').spawn;
-const {readdir, readdirSync, lstatSync} = require('fs');
-const path = require('path');
-const chokidar = require('chokidar');
-const elmPath = path.resolve(process.cwd(), 'resources/elm');
-const publicPath = path.resolve(process.cwd(), 'public');
-const cwd = path.resolve(process.cwd(), elmPath);
+const util = require('util')
+const spawn = util.promisify(require('child_process').spawn)
+const { readdir, lstat } = require('fs').promises
+const path = require('path')
+const chokidar = require('chokidar')
+const elmPath = path.resolve(process.cwd(), 'resources/elm')
+const publicPath = path.resolve(process.cwd(), 'public')
+const cwd = path.resolve(process.cwd(), elmPath)
 
 /**
  |--------------------------------------------------------------------------
  | Retrieves directories with a Main.elm in `resources/assets/elm`
  |--------------------------------------------------------------------------
  */
-const getPrograms = function (done) {
-    let programs = [];
+const getPrograms = async () => {
+  return (await readdir(elmPath))
+    .reduce(async (programs, file) => {
+      let modulePath = path.resolve(elmPath, file)
 
-    readdir(elmPath, (err, files) => {
-        files
-            .forEach(file => {
-                let modulePath = path.resolve(elmPath, file);
+      if (((await lstat(modulePath)).isDirectory())
+        && (await readdir(modulePath)).filter(files => files.includes('Main.elm')).length > 0) {
+        (await programs).push(`${file}/Main.elm`)
+      }
 
-                if (lstatSync(modulePath).isDirectory() && readdirSync(modulePath)
-                    .filter((files) => {
-                        return files.includes('Main.elm');
-                    }).length > 0) {
-                    programs.push(`${file}/Main.elm`);
-                }
-            });
-
-        done(programs);
-    });
-};
+      return programs;
+    }, [])
+}
 
 /**
  |--------------------------------------------------------------------------
  | elm-make
  |--------------------------------------------------------------------------
  */
-const make = getPrograms.bind(null, (programs) => {
-    const debug = process.env.NODE_ENV === 'production' ? '' : '--debug';
-    const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${debug ? '' : '--optimize'}`;
+const make = async () => {
+  const programs = await getPrograms()
+  const debug = process.env.NODE_ENV === 'production' ? '' : '--debug'
+  const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${debug ? '' : '--optimize'}`
 
-    return spawn(
-        command,
-        {
-            shell: true,
-            stdio: 'inherit',
-            cwd: cwd,
-        }
-    );
-});
+  return spawn(
+    command,
+    {
+      shell: true,
+      stdio: 'inherit',
+      cwd: cwd,
+    }
+  )
+}
 
 /**
  |--------------------------------------------------------------------------
@@ -56,16 +52,16 @@ const make = getPrograms.bind(null, (programs) => {
  |--------------------------------------------------------------------------
  */
 const elm = () => {
-    make();
+  /**
+   * Check for --watch
+   */
+  if (process.argv.includes('--watch')) {
+    chokidar.watch(
+      elmPath, { ignored: '**/elm-stuff/**/*', }
+    ).on('change', make)
+  }
 
-    /**
-     * Check for --watch
-     */
-    if (process.argv.includes('--watch')) {
-        chokidar.watch(
-            elmPath, {ignored: '**/elm-stuff/**/*',}
-        ).on('change', make);
-    }
-};
+  return make()
+}
 
-module.exports = elm;
+module.exports = elm

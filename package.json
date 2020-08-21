@@ -1,6 +1,6 @@
 {
   "name": "laravel-elm",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "A package to provide support for compiling Elm in Laravel",
   "main": "main.js",
   "scripts": {
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/loganhenson/laravel-elm#readme",
   "dependencies": {
-    "chokidar": "^3.2.1"
+    "chokidar": "^3.4.2",
+    "elm": "^0.19.1-3"
   }
 }
