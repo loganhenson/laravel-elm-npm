@@ -9,7 +9,7 @@ const cwd = path.resolve(process.cwd(), elmPath)
 
 /**
  |--------------------------------------------------------------------------
- | Retrieves directories with a Main.elm in `resources/assets/elm`
+ | Retrieves directories with a Main.elm in `resources/elm`
  |--------------------------------------------------------------------------
  */
 const getPrograms = async () => {
@@ -46,19 +46,14 @@ const make = async () => {
   )
 }
 
-/**
- |--------------------------------------------------------------------------
- | Elm callback to pass to mix.then() `mix.then(elm)`
- |--------------------------------------------------------------------------
- */
 const elm = () => {
   /**
    * Check for --watch
    */
   if (process.argv.includes('--watch')) {
     chokidar.watch(
-      elmPath, { ignored: '**/elm-stuff/**/*', }
-    ).on('change', make)
+      elmPath, { ignored: '**/elm-stuff/**/*', ignoreInitial: true }
+    ).on('all', make)
   }
 
   return make()
