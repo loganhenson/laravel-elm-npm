@@ -61,7 +61,7 @@ const make = async () => {
   return Promise.resolve()
 }
 
-const elm = async (mix) => {
+const elm = async () => {
   /**
    * Check for --watch
    */
