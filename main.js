@@ -61,7 +61,7 @@ const make = async () => {
   return Promise.resolve()
 }
 
-const elm = () => {
+const elm = async (mix) => {
   /**
    * Check for --watch
    */
@@ -71,7 +71,13 @@ const elm = () => {
     ).on('all', make)
   }
 
-  return make()
+  const made = await make()
+
+  if (mix.inProduction()) {
+    mix.minify("public/js/elm.js").version(["public/js/elm.min.js"]);
+  }
+
+  return made;
 }
 
 mix.extend("elm", elm);
