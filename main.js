@@ -6,7 +6,7 @@ const chokidar = require('chokidar')
 const elmPath = path.resolve(process.cwd(), 'resources/elm')
 const publicPath = path.resolve(process.cwd(), 'public')
 const cwd = path.resolve(process.cwd(), elmPath)
-const mix = require('laravel-mix');
+const mix = require('laravel-mix')
 
 /**
  |--------------------------------------------------------------------------
@@ -36,8 +36,8 @@ const getPrograms = async (dir, allPrograms = []) => {
  */
 const make = async () => {
   const programs = await getPrograms(elmPath)
-  const debug = process.env.NODE_ENV === 'production' ? '' : '--debug'
-  const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${debug ? '' : '--optimize'}`
+  const production = process.env.NODE_ENV === 'production'
+  const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${production ? '--optimize' : ''}`
 
   try {
     const { stdout } = await exec(
@@ -48,14 +48,18 @@ const make = async () => {
     )
     console.log(stdout)
   } catch (e) {
-    if (e.message.includes('DEBUG REMNANTS')) {
-      let msg = e.message.split('\n')
-      msg.shift()
-      msg = msg.join('\n')
-      console.error(msg)
-    }
+    let msg = e.message.split('\n')
+    msg.shift()
+    msg = msg.join('\n')
+    console.error(msg)
 
-    process.exit(e.code)
+    if (production) {
+      if (e.message.includes('DEBUG REMNANTS')) {
+        //
+      }
+
+      process.exit(e.code)
+    }
   }
 
   return Promise.resolve()
@@ -74,12 +78,12 @@ const elm = async () => {
   const made = await make()
 
   if (mix.inProduction()) {
-    mix.minify("public/js/elm.js").version(["public/js/elm.min.js"]);
+    mix.minify('public/js/elm.js').version(['public/js/elm.min.js'])
   }
 
-  return made;
+  return made
 }
 
-mix.extend("elm", elm);
+mix.extend('elm', elm)
 
 module.exports = elm
