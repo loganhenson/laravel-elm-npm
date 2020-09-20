@@ -1,4 +1,5 @@
 const util = require('util')
+const fs = require('fs').promises
 const exec = util.promisify(require('child_process').exec)
 const { readdirSync, statSync } = require('fs')
 const path = require('path')
@@ -31,13 +32,45 @@ const getPrograms = async (dir, allPrograms = []) => {
 
 /**
  |--------------------------------------------------------------------------
- | elm make
+ | Removes Debug.toString statements in production from LaravelElm.elm
+ | Adds Debug.toString statements in development to LaravelElm.elm
+ |--------------------------------------------------------------------------
+ */
+const toggleDebug = async (production) => {
+  const LaravelElmPath = path.resolve(elmPath, 'laravel-elm-stuff', 'LaravelElm.elm')
+  let LaravelElmContents = await fs.readFile(LaravelElmPath, 'utf8')
+
+  const developmentDebug = '                            , sendStateToDevtools <| Debug.toString newModel.state'
+  const productionDebug = '                            , Cmd.none'
+  const debugRegex = /(?<=-- DEBUG_TOGGLE\n)(.*)(?=\n\s+-- END_DEBUG_TOGGLE)/gm
+
+  if (production) {
+    LaravelElmContents = LaravelElmContents.replace(
+      debugRegex,
+      productionDebug
+    )
+    console.log(LaravelElmContents)
+  } else {
+    LaravelElmContents = LaravelElmContents.replace(
+      debugRegex,
+      developmentDebug
+    )
+  }
+
+  await fs.writeFile(LaravelElmPath, LaravelElmContents)
+}
+
+/**
+ |--------------------------------------------------------------------------
+ | elm make cli
  |--------------------------------------------------------------------------
  */
 const make = async () => {
   const programs = await getPrograms(elmPath)
   const production = process.env.NODE_ENV === 'production'
   const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${production ? '--optimize' : ''}`
+
+  await toggleDebug(production)
 
   try {
     const { stdout } = await exec(
