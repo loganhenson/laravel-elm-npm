@@ -30,12 +30,6 @@ const getPrograms = async (dir, allPrograms = []) => {
   return allPrograms
 }
 
-/**
- |--------------------------------------------------------------------------
- | Removes Debug.toString statements in production from LaravelElm.elm
- | Adds Debug.toString statements in development to LaravelElm.elm
- |--------------------------------------------------------------------------
- */
 const toggleDebug = async (production) => {
   const LaravelElmPath = path.resolve(elmPath, 'laravel-elm-stuff', 'LaravelElm.elm')
   let LaravelElmContents = await fs.readFile(LaravelElmPath, 'utf8')
@@ -62,7 +56,7 @@ const toggleDebug = async (production) => {
 
 /**
  |--------------------------------------------------------------------------
- | elm make cli
+ | elm make
  |--------------------------------------------------------------------------
  */
 const make = async () => {
@@ -104,7 +98,13 @@ const elm = async () => {
    */
   if (process.argv.includes('--watch')) {
     chokidar.watch(
-      elmPath, { ignored: '**/elm-stuff/**/*', ignoreInitial: true }
+      elmPath, {
+        ignored: [
+          '**/elm-stuff/**/*',
+          '**/laravel-elm-stuff/LaravelElm.elm',
+        ],
+        ignoreInitial: true
+      }
     ).on('all', make)
   }
 
