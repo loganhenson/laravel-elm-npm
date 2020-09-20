@@ -1,6 +1,6 @@
 {
   "name": "laravel-elm",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "A package to provide support for compiling Elm in Laravel",
   "main": "main.js",
   "scripts": {
