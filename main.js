@@ -43,7 +43,6 @@ const toggleDebug = async (production) => {
       debugRegex,
       productionDebug
     )
-    console.log(LaravelElmContents)
   } else {
     LaravelElmContents = LaravelElmContents.replace(
       debugRegex,
