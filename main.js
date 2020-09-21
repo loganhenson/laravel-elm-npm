@@ -7,6 +7,7 @@ const chokidar = require('chokidar')
 const elmPath = path.resolve(process.cwd(), 'resources/elm')
 const publicPath = path.resolve(process.cwd(), 'public')
 const cwd = path.resolve(process.cwd(), elmPath)
+const WebSocket = require('ws')
 const mix = require('laravel-mix')
 
 /**
@@ -91,11 +92,24 @@ const make = async () => {
   return Promise.resolve()
 }
 
+let websocket = null
+const startWS = () => {
+  const wss = new WebSocket.Server({
+    port: 3030,
+  })
+
+  wss.on('connection', (ws) => {
+    websocket = ws
+  })
+}
+
 const elm = async () => {
   /**
    * Check for --watch
    */
   if (process.argv.includes('--watch')) {
+    startWS()
+
     chokidar.watch(
       elmPath, {
         ignored: [
@@ -104,7 +118,13 @@ const elm = async () => {
         ],
         ignoreInitial: true
       }
-    ).on('all', make)
+    ).on('all', async () => {
+      await make()
+
+      if (websocket) {
+        websocket.send('reload')
+      }
+    })
   }
 
   const made = await make()
