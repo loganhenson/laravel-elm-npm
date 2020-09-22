@@ -120,20 +120,41 @@ const elm = async () => {
       }
     ).on('all', async () => {
       await make()
+      await writeHotFile()
 
       if (websocket) {
-        websocket.send('reload')
+        websocket.send(await inject(await fs.readFile(`${publicPath}/js/elm.js`, 'utf8')))
       }
     })
   }
 
   const made = await make()
+  await writeHotFile()
 
   if (mix.inProduction()) {
     mix.minify('public/js/elm.js').version(['public/js/elm.min.js'])
   }
 
   return made
+}
+
+async function writeHotFile() {
+  await fs.writeFile(`${publicPath}/js/elm-hot.js`, await inject(await fs.readFile(`${publicPath}/js/elm.js`, 'utf8')))
+}
+
+async function inject(ElmCodeJS) {
+  const hmrCode = await fs.readFile(path.join(__dirname, 'hmr.js'), 'utf8')
+
+  // splice in the HMR code
+  const regex = /(_Platform_export\([^]*)(}\(this\)\);)/
+  const match = regex.exec(ElmCodeJS)
+
+  if (match === null) {
+    throw new Error('Compiled JS from the Elm compiler is not valid.')
+  }
+
+  return ElmCodeJS.slice(0, match.index)
+    + match[1] + '\n\n' + hmrCode + '\n\n' + match[2]
 }
 
 mix.extend('elm', elm)
