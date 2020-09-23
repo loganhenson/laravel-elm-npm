@@ -59,7 +59,7 @@ const toggleDebug = async (production) => {
  | elm make
  |--------------------------------------------------------------------------
  */
-const make = async () => {
+const make = async (onSuccess = () => {}) => {
   const programs = await getPrograms(elmPath)
   const production = process.env.NODE_ENV === 'production'
   const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${production ? '--optimize' : ''}`
@@ -74,6 +74,7 @@ const make = async () => {
       }
     )
     console.log(stdout)
+    await onSuccess()
   } catch (e) {
     let msg = e.message.split('\n')
     msg.shift()
@@ -119,8 +120,7 @@ const elm = async () => {
         ignoreInitial: true
       }
     ).on('all', async () => {
-      await make()
-      await writeHotFile()
+      await make(writeHotFile)
 
       if (websocket) {
         websocket.send(await inject(await fs.readFile(`${publicPath}/js/elm.js`, 'utf8')))
@@ -128,8 +128,11 @@ const elm = async () => {
     })
   }
 
-  const made = await make()
-  await writeHotFile()
+  const made = await make(async () => {
+    if (! mix.inProduction()) {
+      await writeHotFile()
+    }
+  })
 
   if (mix.inProduction()) {
     mix.minify('public/js/elm.js').version(['public/js/elm.min.js'])
