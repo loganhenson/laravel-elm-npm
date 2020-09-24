@@ -59,12 +59,12 @@ const toggleDebug = async (production) => {
  | elm make
  |--------------------------------------------------------------------------
  */
-const make = async (onSuccess = () => {}) => {
+const make = async (onSuccess = () => {}, debug) => {
   const programs = await getPrograms(elmPath)
   const production = process.env.NODE_ENV === 'production'
   const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${production ? '--optimize' : ''}`
 
-  await toggleDebug(production)
+  await toggleDebug(production || !debug)
 
   try {
     const { stdout } = await exec(
@@ -104,12 +104,14 @@ const startWS = () => {
   })
 }
 
-const elm = async () => {
+const elm = async ({debug = true}) => {
   /**
    * Check for --watch
    */
   if (process.argv.includes('--watch')) {
-    startWS()
+    if (debug) {
+      startWS()
+    }
 
     chokidar.watch(
       elmPath, {
@@ -120,19 +122,23 @@ const elm = async () => {
         ignoreInitial: true
       }
     ).on('all', async () => {
-      await make(writeHotFile)
+      await make(async () => {
+        if (debug) {
+          await writeHotFile()
+        }
+      }, debug)
 
-      if (websocket) {
+      if (websocket && debug) {
         websocket.send(await inject(await fs.readFile(`${publicPath}/js/elm.js`, 'utf8')))
       }
     })
   }
 
   const made = await make(async () => {
-    if (! mix.inProduction()) {
+    if (! mix.inProduction() && debug) {
       await writeHotFile()
     }
-  })
+  }, debug)
 
   if (mix.inProduction()) {
     mix.minify('public/js/elm.js').version(['public/js/elm.min.js'])
