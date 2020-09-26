@@ -12,7 +12,7 @@ const mix = require('laravel-mix')
 
 /**
  |--------------------------------------------------------------------------
- | Retrieves directories with a Main.elm in `resources/elm`
+ | Retrieves directories with a Main.elm from a directory (recursively)
  |--------------------------------------------------------------------------
  */
 const getPrograms = async (dir, allPrograms = []) => {
@@ -22,7 +22,7 @@ const getPrograms = async (dir, allPrograms = []) => {
     const filepath = path.resolve(dir, filename)
 
     if (statSync(filepath).isDirectory()) {
-      getPrograms(filepath, allPrograms)
+      await getPrograms(filepath, allPrograms)
     } else if (path.basename(filename) === 'Main.elm') {
       allPrograms.push(filepath)
     }
@@ -60,7 +60,8 @@ const toggleDebug = async (production) => {
  |--------------------------------------------------------------------------
  */
 const make = async (onSuccess = () => {}, debug) => {
-  const programs = await getPrograms(elmPath)
+  const elmPagesDir = path.resolve(elmPath, 'pages')
+  const programs = await getPrograms(elmPagesDir)
   const production = process.env.NODE_ENV === 'production'
   const command = `elm make ${programs.join(' ')} --output=${publicPath}/js/elm.js ${production ? '--optimize' : ''}`
 
@@ -104,7 +105,7 @@ const startWS = () => {
   })
 }
 
-const elm = async ({debug = true}) => {
+const elm = async ({ debug = true }) => {
   /**
    * Check for --watch
    */
@@ -135,7 +136,7 @@ const elm = async ({debug = true}) => {
   }
 
   const made = await make(async () => {
-    if (! mix.inProduction() && debug) {
+    if (!mix.inProduction() && debug) {
       await writeHotFile()
     }
   }, debug)
