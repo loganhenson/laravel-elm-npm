@@ -23,7 +23,7 @@ const getPrograms = async (dir, allPrograms = []) => {
 
     if (statSync(filepath).isDirectory()) {
       await getPrograms(filepath, allPrograms)
-    } else if (path.basename(filename) === 'Main.elm') {
+    } else {
       allPrograms.push(filepath)
     }
   }

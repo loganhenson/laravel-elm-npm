@@ -134,7 +134,7 @@
                         return;
                     }
                     log('Reconnect ' + handlers.length + ' handler(s) to port \''
-                        + portName + '\' (' + instance.path + ').');
+                      + portName + '\' (' + instance.path + ').');
                     handlers.forEach(function (handler) {
                         elm.ports[portName].subscribe(handler);
                     });
@@ -166,51 +166,51 @@
         if (portNames.length) {
             // hook outgoing ports
             portNames
-                .filter(function (name) {
-                    return 'subscribe' in elm.ports[name];
-                })
-                .forEach(function (portName) {
-                    var port = elm.ports[portName];
-                    var subscribe = port.subscribe;
-                    var unsubscribe = port.unsubscribe;
-                    elm.ports[portName] = Object.assign(port, {
-                        subscribe: function (handler) {
-                            log('ports.' + portName + '.subscribe called.');
-                            if (!portSubscribes[portName]) {
-                                portSubscribes[portName] = [handler];
-                            } else {
-                                //TODO handle subscribing to single handler more than once?
-                                portSubscribes[portName].push(handler);
-                            }
-                            return subscribe.call(port, handler);
-                        },
-                        unsubscribe: function (handler) {
-                            log('ports.' + portName + '.unsubscribe called.');
-                            var list = portSubscribes[portName];
-                            if (list && list.indexOf(handler) !== -1) {
-                                list.splice(list.lastIndexOf(handler), 1);
-                            } else {
-                                console.warn('ports.' + portName + '.unsubscribe: handler not subscribed');
-                            }
-                            return unsubscribe.call(port, handler);
-                        }
-                    });
-                });
+              .filter(function (name) {
+                  return 'subscribe' in elm.ports[name];
+              })
+              .forEach(function (portName) {
+                  var port = elm.ports[portName];
+                  var subscribe = port.subscribe;
+                  var unsubscribe = port.unsubscribe;
+                  elm.ports[portName] = Object.assign(port, {
+                      subscribe: function (handler) {
+                          log('ports.' + portName + '.subscribe called.');
+                          if (!portSubscribes[portName]) {
+                              portSubscribes[portName] = [handler];
+                          } else {
+                              //TODO handle subscribing to single handler more than once?
+                              portSubscribes[portName].push(handler);
+                          }
+                          return subscribe.call(port, handler);
+                      },
+                      unsubscribe: function (handler) {
+                          log('ports.' + portName + '.unsubscribe called.');
+                          var list = portSubscribes[portName];
+                          if (list && list.indexOf(handler) !== -1) {
+                              list.splice(list.lastIndexOf(handler), 1);
+                          } else {
+                              console.warn('ports.' + portName + '.unsubscribe: handler not subscribed');
+                          }
+                          return unsubscribe.call(port, handler);
+                      }
+                  });
+              });
 
             // hook incoming ports
             portNames
-                .filter(function (name) {
-                    return 'send' in elm.ports[name];
-                })
-                .forEach(function (portName) {
-                    var port = elm.ports[portName];
-                    portSends[portName] = port.send;
-                    elm.ports[portName] = Object.assign(port, {
-                        send: function (val) {
-                            return portSends[portName].call(port, val);
-                        }
-                    });
-                });
+              .filter(function (name) {
+                  return 'send' in elm.ports[name];
+              })
+              .forEach(function (portName) {
+                  var port = elm.ports[portName];
+                  portSends[portName] = port.send;
+                  elm.ports[portName] = Object.assign(port, {
+                      send: function (val) {
+                          return portSends[portName].call(port, val);
+                      }
+                  });
+              });
         }
         return portSubscribes;
     }
@@ -292,8 +292,8 @@
 
     scope['_elm_hot_loader_init'] = function (Elm) {
         if (window.LaravelElm) {
-            if ((window.LaravelElm.page + '.Main') in laravelElmHot.instances) {
-                swap(Elm, laravelElmHot.instances[window.LaravelElm.page + '.Main']);
+            if ((window.LaravelElm.page) in laravelElmHot.instances) {
+                swap(Elm, laravelElmHot.instances[window.LaravelElm.page]);
             }
         }
 
