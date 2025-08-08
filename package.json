@@ -1,6 +1,6 @@
 {
   "name": "laravel-elm",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "A package to provide support for compiling Elm in Laravel with Vite",
   "type": "module",
   "main": "vite-plugin.js",
