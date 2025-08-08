@@ -1,8 +1,13 @@
 {
   "name": "laravel-elm",
-  "version": "3.4.11",
-  "description": "A package to provide support for compiling Elm in Laravel",
-  "main": "main.js",
+  "version": "4.0.0",
+  "description": "A package to provide support for compiling Elm in Laravel with Vite",
+  "type": "module",
+  "main": "vite-plugin.js",
+  "exports": {
+    ".": "./vite-plugin.js",
+    "./vite": "./vite-plugin.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,14 +26,17 @@
   },
   "homepage": "https://github.com/loganhenson/laravel-elm#readme",
   "dependencies": {
+    "autoprefixer": "^10.4.21",
     "chokidar": "^3.4.3",
     "elm": "^0.19.1-5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
     "ws": "^7.4.0"
   },
   "devDependencies": {
-    "laravel-mix": "^6.0.11"
+    "vite": "^5.0.0"
   },
   "peerDependencies": {
-    "laravel-mix": "^6.0.11"
+    "vite": "^5.0.0"
   }
 }
