@@ -7,7 +7,8 @@ For use with: [laravel-elm](https://github.com/tightenco/laravel-elm)
 **Requirements:**
 - Laravel 12.x+
 - PHP 8.4 / 8.5  
-- Vite
+- Vite 7.x
+- Node.js 18+
 
 ## Installation
 
