@@ -9,6 +9,7 @@ For use with the [loganhenson/laravel-elm](https://github.com/loganhenson/larave
 - PHP 8.4+
 - Vite 7.x or 8.x
 - Node.js 20.19+
+- Elm 0.19.3 (installed for you)
 
 ## Installation
 
@@ -16,12 +17,9 @@ For use with the [loganhenson/laravel-elm](https://github.com/loganhenson/larave
 npm install --save-dev laravel-elm
 ```
 
-> **npm 12+:** dependency install scripts are blocked by default, and the `elm`
-> package needs its install script to download the Elm compiler. Allow it once:
->
-> ```bash
-> npm install-scripts approve elm
-> ```
+> Installs the Elm compiler (`elm` 0.19.3) for your platform automatically.
+> npm 12 may warn that `elm`'s install script was blocked: that's harmless, the compiler
+> still runs (the script is only an optimization; `npm install-scripts approve elm` allows it).
 
 ## Configuration
 
@@ -83,6 +81,11 @@ npm run build
 - **WebSocket Support**: Real-time updates during development
 
 ## Changelog
+
+### 4.1.1
+- Elm 0.19.3 (`elm` ^0.19.3-0); set `"elm-version": "0.19.3"` in `resources/elm/elm.json`
+- Builds no longer fail before the first Elm page exists (an empty `resources/js/elm.js` is written)
+- Only `.elm` files are compiled; dotfiles such as macOS `.DS_Store` in `resources/elm/pages` are ignored
 
 ### 4.1.0
 - Support Vite 8 (peer dependency is now `^7.0.0 || ^8.0.0`)

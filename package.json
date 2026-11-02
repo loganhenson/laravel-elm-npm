@@ -1,6 +1,6 @@
 {
   "name": "laravel-elm",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Vite plugin for compiling Elm in Laravel apps (companion to the loganhenson/laravel-elm composer package)",
   "type": "module",
   "main": "vite-plugin.js",
@@ -26,7 +26,7 @@
   "homepage": "https://github.com/loganhenson/laravel-elm#readme",
   "dependencies": {
     "chokidar": "^3.6.0",
-    "elm": "^0.19.1-6",
+    "elm": "^0.19.3-0",
     "ws": "^7.5.10"
   },
   "devDependencies": {
