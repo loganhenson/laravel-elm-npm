@@ -35,27 +35,38 @@ const getPrograms = async (dir, allPrograms = []) => {
   return allPrograms
 }
 
+let toggleDebugLock = false
 const toggleDebug = async (production) => {
-  const LaravelElmPath = path.resolve(elmPath, 'laravel-elm-stuff', 'LaravelElm.elm')
-  let LaravelElmContents = await fs.readFile(LaravelElmPath, 'utf8')
-
-  const developmentDebug = '                            , sendStateToDevtools <| Debug.toString newModel.state'
-  const productionDebug = '                            , Cmd.none'
-  const debugRegex = /(?<=-- DEBUG_TOGGLE\n)(.*)(?=\n\s+-- END_DEBUG_TOGGLE)/gm
-
-  if (production) {
-    LaravelElmContents = LaravelElmContents.replace(
-      debugRegex,
-      productionDebug
-    )
-  } else {
-    LaravelElmContents = LaravelElmContents.replace(
-      debugRegex,
-      developmentDebug
-    )
+  // Serialize writes: concurrent builds (e.g. the dev server + a rebuild) could otherwise
+  // read a half-written LaravelElm.elm and clobber it with an empty file.
+  while (toggleDebugLock) {
+    await new Promise(r => setTimeout(r, 50))
   }
+  toggleDebugLock = true
+  try {
+    const LaravelElmPath = path.resolve(elmPath, 'laravel-elm-stuff', 'LaravelElm.elm')
+    const LaravelElmContents = await fs.readFile(LaravelElmPath, 'utf8')
 
-  await fs.writeFile(LaravelElmPath, LaravelElmContents)
+    if (!LaravelElmContents.trim()) {
+      return
+    }
+
+    const developmentDebug = '                            , sendStateToDevtools <| Debug.toString newModel.state'
+    const productionDebug = '                            , Cmd.none'
+    // \r?\n so files checked out with CRLF line endings (Windows) still match.
+    const debugRegex = /(?<=-- DEBUG_TOGGLE\r?\n)(.*)(?=\r?\n\s+-- END_DEBUG_TOGGLE)/gm
+
+    const updated = LaravelElmContents.replace(
+      debugRegex,
+      production ? productionDebug : developmentDebug
+    )
+
+    if (updated !== LaravelElmContents) {
+      await fs.writeFile(LaravelElmPath, updated)
+    }
+  } finally {
+    toggleDebugLock = false
+  }
 }
 
 /**
@@ -68,7 +79,7 @@ const make = async (onSuccess = () => {}, debug, mode) => {
   const programs = await getPrograms(elmPagesDir)
   const production = mode === 'production'
   const outputPath = path.resolve(publicPath, 'build/assets/elm.js')
-  const command = `elm make ${programs.join(' ')} --output=${outputPath} ${production ? '--optimize' : ''}`
+  const command = `elm make ${programs.map(p => JSON.stringify(p)).join(' ')} --output=${JSON.stringify(outputPath)} ${production ? '--optimize' : ''}`
 
   await toggleDebug(production || !debug)
 

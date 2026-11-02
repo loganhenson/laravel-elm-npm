@@ -1,42 +1,47 @@
 {
   "name": "laravel-elm",
-  "version": "4.0.4",
-  "description": "A package to provide support for compiling Elm in Laravel with Vite",
+  "version": "4.1.0",
+  "description": "Vite plugin for compiling Elm in Laravel apps (companion to the loganhenson/laravel-elm composer package)",
   "type": "module",
   "main": "vite-plugin.js",
   "exports": {
     ".": "./vite-plugin.js",
     "./vite": "./vite-plugin.js"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/loganhenson/laravel-elm.git"
+    "url": "git+https://github.com/loganhenson/laravel-elm-npm.git"
   },
   "keywords": [
     "laravel",
-    "elm"
+    "elm",
+    "vite",
+    "vite-plugin"
   ],
-  "author": "Tighten Co. (logan@tighten.co)",
+  "author": "Logan Henson <logan@loganhenson.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/loganhenson/laravel-elm/issues"
+    "url": "https://github.com/loganhenson/laravel-elm-npm/issues"
   },
   "homepage": "https://github.com/loganhenson/laravel-elm#readme",
   "dependencies": {
-    "autoprefixer": "^10.4.21",
-    "chokidar": "^3.4.3",
-    "elm": "^0.19.1-5",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11",
-    "ws": "^7.4.0"
+    "chokidar": "^3.6.0",
+    "elm": "^0.19.1-6",
+    "ws": "^7.5.10"
   },
   "devDependencies": {
-    "vite": "^7.0.0"
+    "vite": "^8.0.0"
   },
   "peerDependencies": {
-    "vite": "^7.0.0"
+    "vite": "^7.0.0 || ^8.0.0"
+  },
+  "files": [
+    "vite-plugin.js",
+    "hmr.js",
+    "readme.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.19"
   }
 }
